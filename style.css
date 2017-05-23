@@ -114,6 +114,7 @@ color: rgb(17, 102, 17);
 .points{
 	color: red;
 	margin-left: 5px;
+	margin-right: 5px;
 }
 button{
 	background-color: rgb(17, 102, 17);

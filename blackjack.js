@@ -7,6 +7,7 @@ $(document).ready(function(){
 	shuffle(deck);
 	let dealerHand = [];
 	let playerHand= [];
+	let revealTime = 2000;
 	$('#player-points').text("0");
 	$('#dealer-points').text("0");
 
@@ -41,6 +42,8 @@ $(document).ready(function(){
 			cardName = card.point;
 		}
 		$(element).append('<img src = images/' + cardName + '_of_' + card.suit + '.png>');
+		$(element).find(':last-child').hide().fadeIn(revealTime,"swing");
+
 
 	}
 
@@ -100,11 +103,34 @@ $(document).ready(function(){
 		
 	}
 
+	function reveal(){
+		let card = getCard();
+		dealerHand.push(card);
+		let cardName;
+		console.log(card.point);
+		if (card.point === 1) {
+			cardName = 'ace';
+		} else if (card.point === 11) {
+			cardName = 'jack';
+		} else if (card.point === 12) {
+			cardName = 'queen';
+		} else if (card.point === 13) {
+			cardName = 'king';
+		} else {
+			cardName = card.point;
+		}
+		$("#dealer-hand").find(':first-child').replaceWith('<img src = images/' + cardName + '_of_' + card.suit + '.png>');
+		$("#dealer-hand").find(':first-child').hide().fadeIn(revealTime,"swing");
+
+		updatePoint(card.point,"#dealer-points");	
+	}
+
+
 	$("#deal-button").click(function(){
 
-		deal("#dealer-hand");
-		deal("#dealer-hand");
+		$('#dealer-hand').append('<img src = images/back.jpg>').hide().fadeIn(revealTime,"swing");
 		deal("#player-hand");
+		deal("#dealer-hand");
 		deal("#player-hand");
 
 		$('#stand-button').show();
@@ -143,6 +169,8 @@ $(document).ready(function(){
 		
 		let p = check()[0];
 		let d = check()[1];
+		$("#dealer-hand").find(':first-child').remove();
+		$("#dealer-hand").find(':first-child').hide().fadeIn(revealTime,"swing");
 		while(d < 17){
 
 			deal("#dealer-hand");
@@ -176,11 +204,6 @@ $(document).ready(function(){
 			$("#messages").text("Draw!");
 			 gameOver();	
 		}
-
-
-
-
-		
 
 	});
 
