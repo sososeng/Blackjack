@@ -51,8 +51,9 @@ body, html {
 	align-items: center;
 	justify-content: flex-start;
 	display: flex;
+	flex-wrap: wrap;
 	min-height: 195px;
-	min-width: 900px;
+	
 	
 
 
@@ -62,9 +63,10 @@ body, html {
 
 	align-items: center;
 	justify-content: flex-start;
+	flex-wrap: wrap;
 	display: flex;
 	min-height: 195px;
-	min-width: 900px;
+	
 	
 
 }
@@ -74,6 +76,7 @@ body, html {
 
 	margin-top: 50px;
 	display: flex;
+	
 	justify-content: center;
 }
 
@@ -110,6 +113,10 @@ color: rgb(17, 102, 17);
 	color: red;
 	font-weight: bold;
 
+}
+#the-player, #the-dealer{
+	display: flex;
+	justify-content: flex-start;
 }
 .points{
 	color: red;
