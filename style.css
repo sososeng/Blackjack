@@ -52,8 +52,8 @@ body, html {
 	justify-content: flex-start;
 	display: flex;
 	flex-wrap: wrap;
-	min-height: 195px;
-	
+	height: 195px;
+	max-width: 900px;
 	
 
 
@@ -65,7 +65,8 @@ body, html {
 	justify-content: flex-start;
 	flex-wrap: wrap;
 	display: flex;
-	min-height: 195px;
+	height: 195px;
+	max-width: 900px;
 	
 	
 
@@ -82,7 +83,6 @@ body, html {
 
 .hand img {
   width: 15%;
- 
   margin-left: 10px;
 }
 
