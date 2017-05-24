@@ -1,130 +1,137 @@
 $(document).ready(function(){
-
 	$('#play-again').hide();
 	$('#hit-button').hide();
 	$('#stand-button').hide();
-	let deck  = newDeck();
-	shuffle(deck);
-	let dealerHand = [];
-	let playerHand= [];
-	let revealTime = 2000;
+	let deck  = new Deck();
+	let dealerHand = new Hand();
+	let playerHand= new Hand();
+	let revealTime = 1000;
 	$('#player-points').text("0");
 	$('#dealer-points').text("0");
 
-
-	function newDeck(){
-		let cards = [];
+	// deck Object
+	function Deck(){
+		this.cards = [];
 		for (let i = 1; i <= 13; i++) {
-		    cards.push({ point: i, suit: 'spades' }); 
-		    cards.push({ point: i, suit: 'hearts' });
-		    cards.push({ point: i, suit: 'clubs' });
-		    cards.push({ point: i, suit: 'diamonds' });
+			    this.cards.push(new Card(i,'spades')); 
+			    this.cards.push(new Card(i,'hearts'));
+			    this.cards.push(new Card(i,'clubs'));
+			    this.cards.push(new Card(i,'diamonds'));
 		}
-	  return cards;
+
+		let j, x, i;
+		    for (i = this.cards.length; i; i--) {
+		        j = Math.floor(Math.random() * i);
+		        x = this.cards[i - 1];
+		        this.cards[i - 1] = this.cards[j];
+		        this.cards[j] = x;
+		    }
+
 	}
-	function getCard(){
-		let card = deck.pop();
-		return card;
+
+	Deck.prototype.shuffle = function(){
+			let j, x, i;
+		    for (i = this.cards.length; i; i--) {
+		        j = Math.floor(Math.random() * i);
+		        x = this.cards[i - 1];
+		        this.cards[i - 1] = this.cards[j];
+		        this.cards[j] = x;
+		    }
 	}
+
+	Deck.prototype.numCardsLeft = function(){
+		return this.cards.length;
+	}
+
+	Deck.prototype.draw = function(){
+		return this.cards.pop();
+	} // end deck Object
+
+
+	//hand Object
+	function Hand(){
+		this.cards = [];
+	}
+	Hand.prototype.addCard = function(card){
+		this.cards.push(card);
+	};
+	Hand.prototype.getPoints = function(){
+			let myCards = this.cards.slice(0);
+	 		myCards.sort(function(a, b) {
+	    		return b.point - a.point;
+	  		});
+	  		return myCards.reduce(function(sum, card) {
+	    		let point = card.point;
+	    		if (point > 10) {
+	      			point = 10;
+	   			}
+	    		if (point === 1 && sum < 11) {
+	      			point = 11;
+	    		}
+	    		return sum + point;
+	  		}, 0);
+	}; //end hand Object
+
+	//card object
+	function Card(point, suit){
+		this.point = point;
+		this.suit = suit;
+	} 
+	Card.prototype.getImageUrl = function(){
+		if(this.point === 1){
+			return '<img src =\'images/ace_of_'+this.suit+'.png\'>';
+		}else if(this.point === 11){
+			return '<img src =\'images/jack_of_'+this.suit+'.png\'>';
+		}else if (this.point ===12){
+			return '<img src =\'images/queen_of_'+this.suit+'.png\'>';
+		}else if (this.point ===13){
+			return '<img src =\'images/king_of_'+this.suit+'.png\'>';
+		}
+		else{
+			return '<img src =\'images/'+parseInt(this.point)+'_of_'+this.suit+'.png\'>';
+		}
+	}; //end card object
 
 	function showCard(card, element){	
-		let cardName;
-		console.log(card.point);
-		if (card.point === 1) {
-			cardName = 'ace';
-		} else if (card.point === 11) {
-			cardName = 'jack';
-		} else if (card.point === 12) {
-			cardName = 'queen';
-		} else if (card.point === 13) {
-			cardName = 'king';
-		} else {
-			cardName = card.point;
-		}
-		$(element).append('<img src = images/' + cardName + '_of_' + card.suit + '.png>');
+		$(element).append(card.getImageUrl());
 		$(element).find(':last-child').hide().fadeIn(revealTime,"swing");
 
-
 	}
 
-	function shuffle(a){
-	    let j, x, i;
-	    for (i = a.length; i; i--) {
-	        j = Math.floor(Math.random() * i);
-	        x = a[i - 1];
-	        a[i - 1] = a[j];
-	        a[j] = x;
-	    }
-	}
-
-
-	function countpoints(cards){
-		cards = cards.slice(0);
- 		cards.sort(function(a, b) {
-    		return b.point - a.point;
-  		});
-  		return cards.reduce(function(sum, card) {
-    		let point = card.point;
-    		if (point > 10) {
-      			point = 10;
-   			}
-    		if (point === 1 && sum < 11) {
-      			point = 11;
-    		}
-    		return sum + point;
-  		}, 0);
-	}
-
-	function updatePoint(point, element){
+	function updatePoint(element){
 		if(element ==="#player-points"){
-			let p = countpoints(playerHand);
-			$(element).text(p);
+			$(element).text(playerHand.getPoints());
 		}
 		if(element ==="#dealer-points"){
-			let p = countpoints(dealerHand);
-			$(element).text(p);
+			$(element).text(dealerHand.getPoints());
 		}
 	}
 
 	function deal(element){
 		if(element ==="#dealer-hand"){
 
-			let card = getCard();
-			dealerHand.push(card);
+			let card = deck.draw();
+			dealerHand.addCard(card);
 			showCard(card, "#dealer-hand");
-			updatePoint(card.point,"#dealer-points");
+			updatePoint("#dealer-points");
 		}
 		if(element ==="#player-hand"){
-			let card = getCard();
-			playerHand.push(card);
+			let card = deck.draw();
+			playerHand.addCard(card);
 			showCard(card, "#player-hand");
-			updatePoint(card.point,"#player-points");
+			updatePoint("#player-points");
 		}
 		
 	}
 
 	function reveal(){
-		let card = getCard();
-		dealerHand.push(card);
-		let cardName;
-		console.log(card.point);
-		if (card.point === 1) {
-			cardName = 'ace';
-		} else if (card.point === 11) {
-			cardName = 'jack';
-		} else if (card.point === 12) {
-			cardName = 'queen';
-		} else if (card.point === 13) {
-			cardName = 'king';
-		} else {
-			cardName = card.point;
-		}
-		$("#dealer-hand").find(':first-child').replaceWith('<img src = images/' + cardName + '_of_' + card.suit + '.png>');
+		let card = deck.draw();	
+		dealerHand.addCard(card);
+		$("#dealer-hand").find(':first-child').replaceWith(card.getImageUrl());
 		$("#dealer-hand").find(':first-child').hide().fadeIn(revealTime,"swing");
-
-		updatePoint(card.point,"#dealer-points");	
+		
+		updatePoint("#dealer-points");	
 	}
-
 
 	$("#deal-button").click(function(){
 
@@ -132,7 +139,6 @@ $(document).ready(function(){
 		deal("#player-hand");
 		deal("#dealer-hand");
 		deal("#player-hand");
-
 		$('#stand-button').show();
 		$('#hit-button').show();
 		$('#deal-button').hide();
@@ -148,9 +154,8 @@ $(document).ready(function(){
 
 	function check(){
 		let points = [];
-		points.push(countpoints(playerHand));
-		points.push(countpoints(dealerHand));
-
+		points.push(playerHand.getPoints());
+		points.push(dealerHand.getPoints());
 		return points;
 	}
 
@@ -162,17 +167,15 @@ $(document).ready(function(){
 			$('#hit-button').hide();
 			$('#play-again').show();
 		}
-
 	});
 
-	$("#stand-button").click(function(){
-		
+	$("#stand-button").click(function(){	
 		let p = check()[0];
 		let d = check()[1];
-		$("#dealer-hand").find(':first-child').remove();
-		$("#dealer-hand").find(':first-child').hide().fadeIn(revealTime,"swing");
+		//$("#dealer-hand").find(':first-child').remove();
+		reveal();
+		//$("#dealer-hand").find(':first-child').hide().fadeIn(revealTime,"swing");
 		while(d < 17){
-
 			deal("#dealer-hand");
 			if( d > 21){
 			$("#messages").text("You Win.");
@@ -180,8 +183,6 @@ $(document).ready(function(){
 			}
 			d = check()[1];
 		}
-
-
 		if(d > 21 && p<= 21){
 			$("#messages").text("You Win!");
 			gameOver();
@@ -204,28 +205,20 @@ $(document).ready(function(){
 			$("#messages").text("Draw!");
 			 gameOver();	
 		}
-
 	});
 
 	$("#play-again").click(function(){
-
 		$('#play-again').hide();
 		$('#hit-button').hide();
 		$('#stand-button').hide();
 		$('#deal-button').show();
-		deck  = newDeck();
-		shuffle(deck);
-		dealerHand = [];
-		playerHand= [];
+		deck  = new Deck();
+		dealerHand = new Hand();
+		playerHand= new Hand();
 		$('#player-points').text("0");
 		$('#dealer-points').text("0");
 		$("#messages").text("");
 		$("#dealer-hand img").remove();
 		$("#player-hand img").remove();
-
-
 	});
-
-
-
 });
